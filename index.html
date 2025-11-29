@@ -959,7 +959,7 @@
         });
 
         // =================================================================
-        // 🔥 修正後的完整程式碼
+        // 🔥 修正後的完整程式碼 - 解決離線模式問題
         // =================================================================
 
         const FIREBASE_CONFIG = {
@@ -983,6 +983,20 @@
             if (!firebase.apps.length) {
                 firebase.initializeApp(FIREBASE_CONFIG);
                 console.log("Firebase 初始化成功");
+                
+                // 啟用離線持久化並確保連線
+                firebase.firestore().enablePersistence()
+                    .then(() => {
+                        console.log("Firestore 離線持久化已啟用");
+                        // 確保網路連線
+                        return firebase.firestore().enableNetwork();
+                    })
+                    .then(() => {
+                        console.log("Firestore 網路連線已啟用");
+                    })
+                    .catch((err) => {
+                        console.warn("持久化或網路連線設定失敗:", err);
+                    });
             } else {
                 firebase.app();
             }
@@ -993,9 +1007,6 @@
         
         const auth = firebase.auth();
         const db = firebase.firestore();
-
-        // DOM 元素快取
-        let DOM = {};
 
         // 藝廊設定
         let currentSlide = 0;
@@ -1153,7 +1164,15 @@
                 
             } catch (error) {
                 console.error('提交回饋失敗:', error);
-                showAlert('提交回饋失敗，請稍後再試', 'error');
+                
+                let errorMessage = '提交回饋失敗，請稍後再試';
+                if (error.code === 'failed-precondition') {
+                    errorMessage = '請重新整理頁面後再試';
+                } else if (error.code === 'unavailable') {
+                    errorMessage = '網路連線不穩定，請檢查網路後重試';
+                }
+                
+                showAlert(errorMessage, 'error');
             } finally {
                 // 恢復按鈕狀態
                 submitFeedbackBtn.innerHTML = originalText;
@@ -1282,7 +1301,7 @@
         }
 
         // =================================================================
-        // 👤 身份驗證邏輯
+        // 👤 身份驗證邏輯 - 修正離線問題
         // =================================================================
 
         function handleGoogleSignIn() {
@@ -1354,7 +1373,7 @@
                 if (displayName) displayName.textContent = user.displayName || user.email.split('@')[0];
                 if (userEmail) userEmail.textContent = user.email;
 
-                // 檢查使用者是否已經簽到
+                // 檢查使用者是否已經簽到（使用更穩定的方法）
                 checkIfAlreadyCheckedIn(user.uid);
                 
             } else {
@@ -1375,11 +1394,14 @@
             }
         });
 
+        // 修正檢查簽到狀態函數 - 解決離線問題
         async function checkIfAlreadyCheckedIn(uid) {
             try {
                 const docRef = db.collection('checkins').doc(uid);
+                
+                // 使用 get() 而不是 onSnapshot 避免離線錯誤
                 const doc = await docRef.get();
-
+                
                 const submitCheckin = document.getElementById('submitCheckin');
                 if (doc.exists && submitCheckin) {
                     submitCheckin.disabled = true;
@@ -1388,12 +1410,13 @@
                     submitCheckin.innerHTML = `<i class="fas fa-check-circle"></i> 已簽到`;
                 }
             } catch (error) {
-                console.error("檢查簽到狀態失敗:", error);
+                console.warn("檢查簽到狀態時發生問題:", error);
+                // 不顯示錯誤訊息，避免干擾使用者體驗
             }
         }
 
         // =================================================================
-        // 📝 簽到表單邏輯
+        // 📝 簽到表單邏輯 - 修正離線問題
         // =================================================================
 
         function handleCheckinSubmit(e) {
@@ -1425,13 +1448,19 @@
         async function submitCheckinData(user, club, role, originalText, submitCheckin) {
             try {
                 const checkinRef = db.collection('checkins').doc(user.uid);
+                
+                // 檢查是否已簽到
                 const doc = await checkinRef.get();
 
                 if (doc.exists) {
                     showAlert("您已經簽到過了，請勿重複簽到。", 'warning');
+                    // 恢復按鈕狀態
+                    submitCheckin.innerHTML = originalText;
+                    submitCheckin.disabled = false;
                     return;
                 }
 
+                // 寫入簽到資料
                 await checkinRef.set({
                     uid: user.uid,
                     name: user.displayName || user.email.split('@')[0],
@@ -1442,13 +1471,26 @@
                 });
 
                 showAlert("恭喜！簽到成功！", 'success');
-                checkIfAlreadyCheckedIn(user.uid);
+                
+                // 更新按鈕狀態為已簽到
+                submitCheckin.disabled = true;
+                submitCheckin.classList.remove('btn-success');
+                submitCheckin.classList.add('btn-secondary');
+                submitCheckin.innerHTML = `<i class="fas fa-check-circle"></i> 已簽到`;
                 
                 setTimeout(() => showSection('home'), 1500);
 
             } catch (error) {
                 console.error("簽到失敗:", error);
-                showAlert(`簽到失敗：${error.message || '資料庫寫入錯誤'}`, 'error');
+                
+                let errorMessage = "簽到失敗，請稍後再試";
+                if (error.code === 'unavailable') {
+                    errorMessage = "網路連線不穩定，請檢查網路後重試";
+                } else if (error.code === 'permission-denied') {
+                    errorMessage = "權限不足，請確認 Firestore 規則設定正確";
+                }
+                
+                showAlert(errorMessage, 'error');
                 
                 // 恢復按鈕狀態
                 submitCheckin.innerHTML = originalText;
@@ -1457,35 +1499,38 @@
         }
 
         // =================================================================
-        // 📊 數據統計與管理後台邏輯
+        // 📊 數據統計與管理後台邏輯 - 修正離線問題
         // =================================================================
 
         function updateClubCounts() {
             if (!db) return;
             
-            db.collection('checkins').onSnapshot(snapshot => {
-                let rockCountVal = 0;
-                let guitarCountVal = 0;
-                let jazzCountVal = 0;
+            // 使用 get() 而不是 onSnapshot 避免離線錯誤
+            db.collection('checkins').get()
+                .then(snapshot => {
+                    let rockCountVal = 0;
+                    let guitarCountVal = 0;
+                    let jazzCountVal = 0;
 
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    if (data.club === 'rock') rockCountVal++;
-                    if (data.club === 'guitar') guitarCountVal++;
-                    if (data.club === 'jazz') jazzCountVal++;
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        if (data.club === 'rock') rockCountVal++;
+                        if (data.club === 'guitar') guitarCountVal++;
+                        if (data.club === 'jazz') jazzCountVal++;
+                    });
+
+                    // 更新首頁計數
+                    const rockCount = document.getElementById('rockCount');
+                    const guitarCount = document.getElementById('guitarCount');
+                    const jazzCount = document.getElementById('jazzCount');
+                    
+                    if (rockCount) rockCount.textContent = rockCountVal;
+                    if (guitarCount) guitarCount.textContent = guitarCountVal;
+                    if (jazzCount) jazzCount.textContent = jazzCountVal;
+                })
+                .catch((error) => {
+                    console.warn("首頁計數數據獲取失敗:", error);
                 });
-
-                // 更新首頁計數
-                const rockCount = document.getElementById('rockCount');
-                const guitarCount = document.getElementById('guitarCount');
-                const jazzCount = document.getElementById('jazzCount');
-                
-                if (rockCount) rockCount.textContent = rockCountVal;
-                if (guitarCount) guitarCount.textContent = guitarCountVal;
-                if (jazzCount) jazzCount.textContent = jazzCountVal;
-            }, (error) => {
-                console.warn("首頁計數數據同步失敗:", error);
-            });
         }
 
         function loadCheckinData() {
@@ -1501,86 +1546,84 @@
                 return;
             }
 
-            db.collection('checkins').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
-                // 1. 更新詳細記錄表
-                const checkinRecords = document.getElementById('checkinRecords');
-                let recordsHtml = '';
-                let stats = {
-                    rock: { total: 0, performer: 0, audience: 0 },
-                    guitar: { total: 0, performer: 0, audience: 0 },
-                    jazz: { total: 0, performer: 0, audience: 0 },
-                };
+            // 使用 get() 而不是 onSnapshot 避免離線錯誤
+            db.collection('checkins').orderBy('timestamp', 'desc').get()
+                .then(snapshot => {
+                    // 1. 更新詳細記錄表
+                    const checkinRecords = document.getElementById('checkinRecords');
+                    let recordsHtml = '';
+                    let stats = {
+                        rock: { total: 0, performer: 0, audience: 0 },
+                        guitar: { total: 0, performer: 0, audience: 0 },
+                        jazz: { total: 0, performer: 0, audience: 0 },
+                    };
 
-                snapshot.forEach(doc => {
-                    const data = doc.data();
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
 
-                    // 統計數據
-                    if (stats[data.club]) {
-                        stats[data.club].total++;
-                        if (data.role === 'performer') {
-                            stats[data.club].performer++;
-                        } else if (data.role === 'audience') {
-                            stats[data.club].audience++;
+                        // 統計數據
+                        if (stats[data.club]) {
+                            stats[data.club].total++;
+                            if (data.role === 'performer') {
+                                stats[data.club].performer++;
+                            } else if (data.role === 'audience') {
+                                stats[data.club].audience++;
+                            }
                         }
+                        
+                        const clubNameMap = { rock: '熱音社', guitar: '吉他社', jazz: '爵士音樂社' };
+                        const clubName = clubNameMap[data.club] || data.club;
+                        const roleText = data.role === 'performer' ? '表演者' : '觀眾';
+                        const roleBadgeClass = data.role === 'performer' ? 'badge-performer' : 'badge-audience';
+
+                        recordsHtml += `
+                            <tr>
+                                <td>${data.name}</td>
+                                <td>${data.email}</td>
+                                <td>${clubName}</td>
+                                <td><span class="badge ${roleBadgeClass}">${roleText}</span></td>
+                                <td>${formatTimestamp(data.timestamp)}</td>
+                            </tr>
+                        `;
+                    });
+
+                    if (checkinRecords) {
+                        checkinRecords.innerHTML = recordsHtml;
                     }
+
+                    // 2. 更新管理後台統計卡片
+                    const adminRockTotal = document.getElementById('adminRockTotal');
+                    const adminRockPerformers = document.getElementById('adminRockPerformers');
+                    const adminRockAudience = document.getElementById('adminRockAudience');
+                    const adminGuitarTotal = document.getElementById('adminGuitarTotal');
+                    const adminGuitarPerformers = document.getElementById('adminGuitarPerformers');
+                    const adminGuitarAudience = document.getElementById('adminGuitarAudience');
+                    const adminJazzTotal = document.getElementById('adminJazzTotal');
+                    const adminJazzPerformers = document.getElementById('adminJazzPerformers');
+                    const adminJazzAudience = document.getElementById('adminJazzAudience');
+
+                    if (adminRockTotal) adminRockTotal.textContent = stats.rock.total;
+                    if (adminRockPerformers) adminRockPerformers.textContent = stats.rock.performer;
+                    if (adminRockAudience) adminRockAudience.textContent = stats.rock.audience;
+
+                    if (adminGuitarTotal) adminGuitarTotal.textContent = stats.guitar.total;
+                    if (adminGuitarPerformers) adminGuitarPerformers.textContent = stats.guitar.performer;
+                    if (adminGuitarAudience) adminGuitarAudience.textContent = stats.guitar.audience;
+
+                    if (adminJazzTotal) adminJazzTotal.textContent = stats.jazz.total;
+                    if (adminJazzPerformers) adminJazzPerformers.textContent = stats.jazz.performer;
+                    if (adminJazzAudience) adminJazzAudience.textContent = stats.jazz.audience;
                     
-                    const clubNameMap = { rock: '熱音社', guitar: '吉他社', jazz: '爵士音樂社' };
-                    const clubName = clubNameMap[data.club] || data.club;
-                    const roleText = data.role === 'performer' ? '表演者' : '觀眾';
-                    const roleBadgeClass = data.role === 'performer' ? 'badge-performer' : 'badge-audience';
-
-                    recordsHtml += `
-                        <tr>
-                            <td>${data.name}</td>
-                            <td>${data.email}</td>
-                            <td>${clubName}</td>
-                            <td><span class="badge ${roleBadgeClass}">${roleText}</span></td>
-                            <td>${formatTimestamp(data.timestamp)}</td>
-                        </tr>
-                    `;
+                })
+                .catch((error) => {
+                    console.error("載入簽到數據失敗:", error);
+                    showAlert("載入簽到數據失敗，請檢查權限或網路。", 'error');
                 });
-
-                if (checkinRecords) {
-                    checkinRecords.innerHTML = recordsHtml;
-                }
-
-                // 2. 更新管理後台統計卡片
-                const adminRockTotal = document.getElementById('adminRockTotal');
-                const adminRockPerformers = document.getElementById('adminRockPerformers');
-                const adminRockAudience = document.getElementById('adminRockAudience');
-                const adminGuitarTotal = document.getElementById('adminGuitarTotal');
-                const adminGuitarPerformers = document.getElementById('adminGuitarPerformers');
-                const adminGuitarAudience = document.getElementById('adminGuitarAudience');
-                const adminJazzTotal = document.getElementById('adminJazzTotal');
-                const adminJazzPerformers = document.getElementById('adminJazzPerformers');
-                const adminJazzAudience = document.getElementById('adminJazzAudience');
-
-                if (adminRockTotal) adminRockTotal.textContent = stats.rock.total;
-                if (adminRockPerformers) adminRockPerformers.textContent = stats.rock.performer;
-                if (adminRockAudience) adminRockAudience.textContent = stats.rock.audience;
-
-                if (adminGuitarTotal) adminGuitarTotal.textContent = stats.guitar.total;
-                if (adminGuitarPerformers) adminGuitarPerformers.textContent = stats.guitar.performer;
-                if (adminGuitarAudience) adminGuitarAudience.textContent = stats.guitar.audience;
-
-                if (adminJazzTotal) adminJazzTotal.textContent = stats.jazz.total;
-                if (adminJazzPerformers) adminJazzPerformers.textContent = stats.jazz.performer;
-                if (adminJazzAudience) adminJazzAudience.textContent = stats.jazz.audience;
-                
-            }, (error) => {
-                console.error("載入簽到數據失敗:", error);
-                showAlert("載入簽到數據失敗，請檢查權限或網路。", 'error');
-            });
         }
 
         // =================================================================
         // 🚀 初始化應用程式
         // =================================================================
-
-        function initializeDOMElements() {
-            // 直接獲取 DOM 元素，不使用 DOM 物件
-            // 這樣可以確保每次都能獲取到最新的元素
-        }
 
         function bindEventListeners() {
             // 安全地綁定事件
