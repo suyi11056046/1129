@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* 您的 CSS 樣式保持不變 */
         :root {
             --primary-color: #4da6ff;
             --primary-light: #e6f2ff;
@@ -38,7 +37,6 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* 評分星星樣式 */
         .rating-stars input[type="radio"] {
             display: none;
         }
@@ -60,7 +58,6 @@
             color: #ffc107;
         }
 
-        /* 其他 CSS 樣式保持不變 */
         body {
             background-color: var(--background-color);
             color: var(--text-color);
@@ -101,7 +98,6 @@
             color: var(--primary-dark);
         }
 
-        /* 藝廊樣式 */
         .gallery-container {
             position: relative;
             width: 90%;
@@ -133,15 +129,10 @@
             z-index: 5;
         }
 
-        .gallery-slide img,
-        .gallery-slide video {
+        .gallery-slide img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-        }
-        
-        .gallery-slide video {
-            display: block; 
         }
 
         .gallery-controls {
@@ -196,18 +187,6 @@
 
         .gallery-next {
             right: 15px;
-        }
-
-        .media-type-badge {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            z-index: 10;
         }
 
         .card {
@@ -292,7 +271,6 @@
             opacity: 0.6;
             cursor: not-allowed;
             transform: none !important;
-            box-shadow: none;
         }
 
         .btn-block {
@@ -306,14 +284,6 @@
 
         .btn-success:hover {
             background-color: #3d8b40;
-        }
-
-        .btn-danger {
-            background-color: var(--error-color);
-        }
-
-        .btn-danger:hover {
-            background-color: #d32f2f;
         }
 
         .btn-secondary {
@@ -499,75 +469,6 @@
             background-size: contain;
         }
 
-        /* 響應式設計 */
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            
-            .logo h1 {
-                font-size: 1.5rem;
-            }
-            
-            .card {
-                padding: 15px;
-            }
-            
-            .card-title {
-                font-size: 1.2rem;
-            }
-            
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
-            
-            .gallery-container {
-                width: 95%;
-                padding-bottom: 60%;
-            }
-            
-            .gallery-nav {
-                width: 35px;
-                height: 35px;
-            }
-            
-            .stats-card {
-                padding: 15px;
-            }
-            
-            .stats-number {
-                font-size: 1.8rem;
-            }
-            
-            .stats-label {
-                font-size: 0.85rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .logo h1 {
-                font-size: 1.3rem;
-            }
-            
-            .card {
-                padding: 12px;
-            }
-            
-            .btn {
-                padding: 10px 20px;
-                font-size: 0.9rem;
-            }
-            
-            .stats-number {
-                font-size: 1.5rem;
-            }
-            
-            .gallery-nav {
-                width: 30px;
-                height: 30px;
-            }
-        }
-
         .navbar {
             background: var(--primary-color);
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -609,6 +510,70 @@
             color: white;
             font-weight: 500;
         }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .logo h1 {
+                font-size: 1.5rem;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            .card-title {
+                font-size: 1.2rem;
+            }
+            
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .gallery-container {
+                width: 95%;
+                padding-bottom: 60%;
+            }
+            
+            .gallery-nav {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .stats-card {
+                padding: 15px;
+            }
+            
+            .stats-number {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo h1 {
+                font-size: 1.3rem;
+            }
+            
+            .card {
+                padding: 12px;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .stats-number {
+                font-size: 1.5rem;
+            }
+            
+            .gallery-nav {
+                width: 30px;
+                height: 30px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -647,9 +612,7 @@
                 <i class="fas fa-music"></i>
                 <h1>聯合成果發表會簽到系統</h1>
             </div>
-            <div class="gallery-container" id="galleryContainer">
-                <!-- 藝廊內容將由 JavaScript 動態生成 -->
-            </div>
+            <div class="gallery-container" id="galleryContainer"></div>
         </header>
 
         <section id="home" style="display: block;">
@@ -659,8 +622,7 @@
             <div class="dashboard">
                 <div class="card">
                     <div class="card-title">
-                        <i class="fas fa-guitar"></i>
-                        熱音社
+                        <i class="fas fa-guitar"></i> 熱音社
                     </div>
                     <div class="stats-card">
                         <div class="club-icon">🎸</div>
@@ -671,8 +633,7 @@
                 </div>
                 <div class="card">
                     <div class="card-title">
-                        <i class="fas fa-music"></i>
-                        吉他社
+                        <i class="fas fa-music"></i> 吉他社
                     </div>
                     <div class="stats-card">
                         <div class="club-icon">🎶</div>
@@ -683,8 +644,7 @@
                 </div>
                 <div class="card">
                     <div class="card-title">
-                        <i class="fas fa-drum"></i>
-                        爵士音樂社
+                        <i class="fas fa-drum"></i> 爵士音樂社
                     </div>
                     <div class="stats-card">
                         <div class="club-icon">🎷</div>
@@ -697,8 +657,7 @@
 
             <div class="card text-center">
                 <h2 class="card-title" style="border: none; justify-content: center;">
-                    <i class="fas fa-qrcode"></i>
-                    快速簽到入口
+                    <i class="fas fa-qrcode"></i> 快速簽到入口
                 </h2>
                 <p style="margin-bottom: 20px; color: var(--light-text);">
                     使用 Google 帳號快速登入，輕鬆完成簽到流程
@@ -712,8 +671,7 @@
         <section id="checkin" class="mt-4" style="display:none;">
             <div class="card login-section">
                 <h2 class="card-title" style="justify-content: center;">
-                    <i class="fas fa-clipboard-check"></i>
-                    活動簽到
+                    <i class="fas fa-clipboard-check"></i> 活動簽到
                 </h2>
                 
                 <div id="loginSection" style="display: none;"> 
@@ -726,8 +684,7 @@
                     </div>
                     <div class="card" style="background-color: var(--primary-light); border: none; padding: 15px;">
                         <div class="card-title" style="border: none; font-size: 1.1rem; margin-bottom: 10px;">
-                            <i class="fas fa-info-circle"></i>
-                            使用說明
+                            <i class="fas fa-info-circle"></i> 使用說明
                         </div>
                         <ul style="color: var(--light-text); padding-left: 20px; margin: 0; text-align: left;">
                             <li>請使用學校提供的 Google 帳號登入</li>
@@ -781,8 +738,7 @@
         <section id="admin" class="mt-4" style="display:none;">
             <div class="card">
                 <h2 class="card-title">
-                    <i class="fas fa-chart-bar"></i>
-                    管理後台
+                    <i class="fas fa-chart-bar"></i> 管理後台
                 </h2>
                 
                 <h3 class="section-title" style="font-size: 1.3rem;">社團別簽到詳情</h3>
@@ -821,8 +777,7 @@
                 
                 <div class="card">
                     <div class="card-title">
-                        <i class="fas fa-list-alt"></i>
-                        詳細簽到記錄
+                        <i class="fas fa-list-alt"></i> 詳細簽到記錄
                     </div>
                     <div class="table-responsive">
                         <table class="table">
@@ -835,9 +790,7 @@
                                     <th>簽到時間</th>
                                 </tr>
                             </thead>
-                            <tbody id="checkinRecords">
-                                <!-- 簽到記錄將由 JavaScript 動態生成 -->
-                            </tbody>
+                            <tbody id="checkinRecords"></tbody>
                         </table>
                     </div>
                 </div>
@@ -845,14 +798,12 @@
         </section>
     </div>
 
-    <!-- 回饋模態視窗 -->
     <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="feedbackModalLabel">
-                        <i class="fas fa-comment-dots me-2"></i>
-                        活動回饋
+                        <i class="fas fa-comment-dots me-2"></i> 活動回饋
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -920,7 +871,6 @@
         </div>
     </div>
 
-    <!-- 回饋成功模態視窗 -->
     <div class="modal fade" id="feedbackSuccessModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -941,27 +891,9 @@
         <p class="small" style="margin-top: 5px;">熱音社 × 吉他社 × 爵士音樂社</p>
     </footer>
 
-    <!-- 更新到 Bootstrap 5.3.2 -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        // 全域錯誤處理
-        window.addEventListener('error', function(e) {
-            if (e.message && (
-                e.message.includes('Cross-Origin-Opener-Policy') ||
-                e.message.includes('popup') ||
-                e.message.includes('modal.js')
-            )) {
-                console.warn('第三方錯誤已忽略');
-                e.preventDefault();
-                return true;
-            }
-        });
-
-        // =================================================================
-        // 🔥 修正後的完整程式碼 - 解決離線模式問題
-        // =================================================================
-
         const FIREBASE_CONFIG = {
             apiKey: "AIzaSyDftj_ljUaMvydlgSe2B_DhAvzb2XZRh28",
             authDomain: "project-1354158353070095567.firebaseapp.com",
@@ -972,43 +904,26 @@
             measurementId: "G-63CP9QZBV6"
         };
 
-        const ADMIN_EMAILS = [
-            "11056046@ntub.edu.tw"
-        ];
-
+        const ADMIN_EMAILS = ["11056046@ntub.edu.tw"];
         const SCHOOL_DOMAIN = "ntub.edu.tw";
 
-        // 初始化 Firebase
+        let auth, db;
         try {
             if (!firebase.apps.length) {
                 firebase.initializeApp(FIREBASE_CONFIG);
                 console.log("Firebase 初始化成功");
-                
-                // 啟用離線持久化並確保連線
-                firebase.firestore().enablePersistence()
-                    .then(() => {
-                        console.log("Firestore 離線持久化已啟用");
-                        // 確保網路連線
-                        return firebase.firestore().enableNetwork();
-                    })
-                    .then(() => {
-                        console.log("Firestore 網路連線已啟用");
-                    })
-                    .catch((err) => {
-                        console.warn("持久化或網路連線設定失敗:", err);
-                    });
+                auth = firebase.auth();
+                db = firebase.firestore();
             } else {
                 firebase.app();
+                auth = firebase.auth();
+                db = firebase.firestore();
             }
         } catch (error) {
             console.error("Firebase 初始化失敗:", error);
             showAlert("系統初始化失敗，請重新整理頁面", 'error');
         }
-        
-        const auth = firebase.auth();
-        const db = firebase.firestore();
 
-        // 藝廊設定
         let currentSlide = 0;
         let galleryInterval;
         const galleryMedia = [
@@ -1017,18 +932,11 @@
             { type: 'image', src: 'https://picsum.photos/900/450?random=3', alt: '爵士音樂社即興' },
         ];
 
-        // =================================================================
-        // 🛠️ 輔助函式
-        // =================================================================
-
         function showAlert(message, type = 'success') {
             const existingAlert = document.querySelector('.alert');
-            if (existingAlert) {
-                existingAlert.remove();
-            }
+            if (existingAlert) existingAlert.remove();
 
             const icon = type === 'success' ? 'check-circle' : (type === 'error' ? 'exclamation-triangle' : 'info-circle');
-
             const alertDiv = document.createElement('div');
             alertDiv.className = `alert alert-${type}`;
             alertDiv.setAttribute('role', 'alert');
@@ -1037,13 +945,7 @@
 
             setTimeout(() => {
                 alertDiv.style.opacity = '0';
-                alertDiv.style.transition = 'opacity 0.5s ease';
-                
-                setTimeout(() => {
-                    if (alertDiv.parentNode) {
-                        alertDiv.remove();
-                    }
-                }, 500);
+                setTimeout(() => alertDiv.remove(), 500);
             }, 3000);
         }
 
@@ -1068,13 +970,10 @@
                 }
             }
             
-            // 處理手機選單收合
             const navbarCollapse = document.getElementById('navbarNav');
             if (navbarCollapse && navbarCollapse.classList.contains('show')) {
                 const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
-                if (bsCollapse) {
-                    bsCollapse.hide();
-                }
+                if (bsCollapse) bsCollapse.hide();
             }
         }
 
@@ -1091,18 +990,15 @@
             });
         }
 
-        // =================================================================
-        // 💬 回饋功能修正
-        // =================================================================
-
         function showFeedbackModal() {
-            // 使用 Bootstrap 的模態視窗
+            const feedbackForm = document.getElementById('feedbackForm');
+            if (feedbackForm) feedbackForm.reset();
+            
             const feedbackModal = new bootstrap.Modal(document.getElementById('feedbackModal'));
             feedbackModal.show();
         }
 
         function initializeFeedback() {
-            // 綁定回饋提交事件
             const submitFeedbackBtn = document.getElementById('submitFeedback');
             if (submitFeedbackBtn) {
                 submitFeedbackBtn.addEventListener('click', handleFeedbackSubmit);
@@ -1110,27 +1006,29 @@
         }
 
         function handleFeedbackSubmit() {
-            // 獲取表單數據
-            const name = document.getElementById('feedbackName').value;
-            const email = document.getElementById('feedbackEmail').value;
+            const name = document.getElementById('feedbackName').value.trim();
+            const email = document.getElementById('feedbackEmail').value.trim();
             const club = document.getElementById('feedbackClub').value;
             const rating = document.querySelector('input[name="rating"]:checked')?.value;
-            const message = document.getElementById('feedbackMessage').value;
+            const message = document.getElementById('feedbackMessage').value.trim();
             const allowContact = document.getElementById('allowContact').checked;
 
-            // 驗證表單
             if (!name || !email || !club || !rating || !message) {
                 showAlert('請填寫所有必填欄位', 'error');
                 return;
             }
 
-            // 顯示載入狀態
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showAlert('請輸入有效的電子郵件地址', 'error');
+                return;
+            }
+
             const submitFeedbackBtn = document.getElementById('submitFeedback');
             const originalText = submitFeedbackBtn.innerHTML;
             submitFeedbackBtn.disabled = true;
             submitFeedbackBtn.innerHTML = '<span class="loading-spinner me-2"></span> 提交中...';
 
-            // 提交回饋到 Firebase
             submitFeedbackToFirebase({
                 name,
                 email,
@@ -1146,183 +1044,48 @@
             try {
                 await db.collection('feedbacks').add(feedbackData);
                 
-                // 顯示成功訊息
                 const successModal = new bootstrap.Modal(document.getElementById('feedbackSuccessModal'));
                 const feedbackModal = bootstrap.Modal.getInstance(document.getElementById('feedbackModal'));
                 
-                if (feedbackModal) {
-                    feedbackModal.hide();
-                }
-                
+                if (feedbackModal) feedbackModal.hide();
                 successModal.show();
                 
-                // 重置表單
-                const feedbackForm = document.getElementById('feedbackForm');
-                if (feedbackForm) {
-                    feedbackForm.reset();
-                }
+                console.log('回饋提交成功');
                 
             } catch (error) {
                 console.error('提交回饋失敗:', error);
                 
                 let errorMessage = '提交回饋失敗，請稍後再試';
-                if (error.code === 'failed-precondition') {
-                    errorMessage = '請重新整理頁面後再試';
+                if (error.code === 'permission-denied') {
+                    errorMessage = '權限不足，請檢查 Firestore 規則設定';
                 } else if (error.code === 'unavailable') {
                     errorMessage = '網路連線不穩定，請檢查網路後重試';
                 }
                 
                 showAlert(errorMessage, 'error');
             } finally {
-                // 恢復按鈕狀態
                 submitFeedbackBtn.innerHTML = originalText;
                 submitFeedbackBtn.disabled = false;
             }
         }
 
-        // =================================================================
-        // 🖼️ 藝廊邏輯
-        // =================================================================
-
-        function initGallery() {
-            const galleryContainer = document.getElementById('galleryContainer');
-            if (!galleryContainer) {
-                console.error("找不到藝廊容器");
-                return;
-            }
-            
-            // 清空現有內容
-            galleryContainer.innerHTML = '';
-            
-            // 添加導航按鈕
-            galleryContainer.innerHTML = `
-                <button class="gallery-nav gallery-prev" onclick="prevSlide()">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button class="gallery-nav gallery-next" onclick="nextSlide()">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-                <div class="gallery-controls" id="galleryControls"></div>
-            `;
-            
-            // 重新獲取控制元素
-            const galleryControls = document.getElementById('galleryControls');
-            
-            // 添加輪播項目
-            const slidesHtml = galleryMedia.map((media, index) => {
-                const activeClass = index === 0 ? 'active' : '';
-                const mediaTag = media.type === 'video' ? 
-                    `<video src="${media.src}" loop muted playsinline></video>` :
-                    `<img src="${media.src}" alt="${media.alt}" loading="lazy">`;
-                const badge = media.type === 'video' ? 
-                    `<span class="media-type-badge"><i class="fas fa-video"></i> 影片</span>` :
-                    `<span class="media-type-badge"><i class="fas fa-image"></i> 照片</span>`;
-
-                return `<div class="gallery-slide ${activeClass}">${mediaTag}${badge}</div>`;
-            }).join('');
-            
-            galleryContainer.insertAdjacentHTML('beforeend', slidesHtml);
-
-            // 產生控制圓點
-            const dotsHtml = galleryMedia.map((_, index) => {
-                const activeClass = index === 0 ? 'active' : '';
-                return `<div class="gallery-dot ${activeClass}" onclick="showSlide(${index})"></div>`;
-            }).join('');
-            
-            galleryControls.innerHTML = dotsHtml;
-            
-            console.log(`藝廊初始化完成，共 ${galleryMedia.length} 個項目`);
-        }
-
-        function showSlide(index) {
-            const gallerySlides = document.querySelectorAll('.gallery-slide');
-            const galleryDots = document.querySelectorAll('.gallery-dot');
-            
-            if (!gallerySlides || gallerySlides.length === 0) return;
-
-            // 停止所有影片
-            gallerySlides.forEach(slide => {
-                const video = slide.querySelector('video');
-                if (video) video.pause();
-            });
-
-            // 計算新索引
-            currentSlide = (index + galleryMedia.length) % galleryMedia.length;
-
-            // 更新 slides
-            gallerySlides.forEach((slide, idx) => {
-                slide.classList.remove('active');
-                if (idx === currentSlide) {
-                    slide.classList.add('active');
-                    // 播放當前影片
-                    const video = slide.querySelector('video');
-                    if (video) {
-                        video.play().catch(e => console.log('影片自動播放被阻止:', e));
-                    }
-                }
-            });
-
-            // 更新圓點
-            if (galleryDots) {
-                galleryDots.forEach((dot, idx) => {
-                    dot.classList.remove('active');
-                    if (idx === currentSlide) {
-                        dot.classList.add('active');
-                    }
-                });
-            }
-        }
-
-        function nextSlide() {
-            showSlide(currentSlide + 1);
-        }
-
-        function prevSlide() {
-            showSlide(currentSlide - 1);
-        }
-
-        function startGallery() {
-            if (galleryMedia.length <= 1) return;
-            clearInterval(galleryInterval);
-            galleryInterval = setInterval(() => {
-                nextSlide();
-            }, 5000);
-        }
-
-        function stopGallery() {
-            clearInterval(galleryInterval);
-            const gallerySlides = document.querySelectorAll('.gallery-slide');
-            if (gallerySlides) {
-                gallerySlides.forEach(slide => {
-                    const video = slide.querySelector('video');
-                    if (video) video.pause();
-                });
-            }
-        }
-
-        // =================================================================
-        // 👤 身份驗證邏輯 - 修正離線問題
-        // =================================================================
-
         function handleGoogleSignIn() {
             const provider = new firebase.auth.GoogleAuthProvider();
+            provider.addScope('email');
+            provider.addScope('profile');
             provider.setCustomParameters({
-                prompt: 'select_account' 
+                prompt: 'select_account',
+                login_hint: '@ntub.edu.tw'
             });
 
             auth.signInWithPopup(provider)
-                .then((result) => {
-                    // 登入成功處理交給 onAuthStateChanged
-                })
                 .catch((error) => {
                     console.error("Google 登入失敗:", error);
                     let errorMessage = "登入失敗，請稍後再試。";
-                    if (error.code === 'auth/popup-closed-by-user') {
-                         errorMessage = "登入視窗已被關閉，請重新點擊登入。";
-                    } else if (error.code === 'auth/cancelled-popup-request') {
-                        errorMessage = "登入視窗已被瀏覽器阻止，請允許彈出視窗。";
-                    } else if (error.code === 'auth/account-exists-with-different-credential') {
-                        errorMessage = "此信箱已註冊，請檢查您是否使用其他方式登入過。";
+                    if (error.code === 'auth/popup-blocked') {
+                        errorMessage = "登入視窗被瀏覽器阻止，請允許彈出視窗。";
+                    } else if (error.code === 'auth/popup-closed-by-user') {
+                        errorMessage = "登入視窗已被關閉，請重新點擊登入。";
                     }
                     showAlert(errorMessage, 'error');
                 });
@@ -1340,10 +1103,8 @@
                 });
         }
 
-        // 監聽身份狀態變化
         auth.onAuthStateChanged(user => {
             if (user) {
-                // 檢查學校信箱網域
                 if (!user.email || !user.email.endsWith(`@${SCHOOL_DOMAIN}`)) {
                     showAlert(`僅限使用 @${SCHOOL_DOMAIN} 結尾的電子郵件登入。`, 'error');
                     auth.signOut();
@@ -1352,7 +1113,6 @@
 
                 const is_admin = ADMIN_EMAILS.includes(user.email);
                 
-                // 更新導航欄顯示
                 const signInButton = document.getElementById('signInButton');
                 const userMenu = document.getElementById('userMenu');
                 const navUserName = document.getElementById('navUserName');
@@ -1367,17 +1127,14 @@
                 if (navUserName) navUserName.textContent = user.displayName || user.email.split('@')[0];
                 if (adminLink) adminLink.style.display = is_admin ? 'block' : 'none';
 
-                // 更新簽到頁面顯示
                 if (loginSection) loginSection.style.display = 'none';
                 if (userSection) userSection.style.display = 'block';
                 if (displayName) displayName.textContent = user.displayName || user.email.split('@')[0];
                 if (userEmail) userEmail.textContent = user.email;
 
-                // 檢查使用者是否已經簽到（使用更穩定的方法）
                 checkIfAlreadyCheckedIn(user.uid);
                 
             } else {
-                // 未登入狀態
                 const signInButton = document.getElementById('signInButton');
                 const userMenu = document.getElementById('userMenu');
                 const adminLink = document.getElementById('adminLink');
@@ -1388,20 +1145,16 @@
                 if (userMenu) userMenu.style.display = 'none';
                 if (adminLink) adminLink.style.display = 'none';
 
-                // 更新簽到頁面顯示
                 if (loginSection) loginSection.style.display = 'block';
                 if (userSection) userSection.style.display = 'none';
             }
         });
 
-        // 修正檢查簽到狀態函數 - 解決離線問題
         async function checkIfAlreadyCheckedIn(uid) {
             try {
                 const docRef = db.collection('checkins').doc(uid);
-                
-                // 使用 get() 而不是 onSnapshot 避免離線錯誤
                 const doc = await docRef.get();
-                
+
                 const submitCheckin = document.getElementById('submitCheckin');
                 if (doc.exists && submitCheckin) {
                     submitCheckin.disabled = true;
@@ -1411,13 +1164,8 @@
                 }
             } catch (error) {
                 console.warn("檢查簽到狀態時發生問題:", error);
-                // 不顯示錯誤訊息，避免干擾使用者體驗
             }
         }
-
-        // =================================================================
-        // 📝 簽到表單邏輯 - 修正離線問題
-        // =================================================================
 
         function handleCheckinSubmit(e) {
             e.preventDefault();
@@ -1436,7 +1184,6 @@
                 return;
             }
 
-            // 增加 Loading 狀態
             const submitCheckin = document.getElementById('submitCheckin');
             const originalText = submitCheckin.innerHTML;
             submitCheckin.disabled = true;
@@ -1448,19 +1195,15 @@
         async function submitCheckinData(user, club, role, originalText, submitCheckin) {
             try {
                 const checkinRef = db.collection('checkins').doc(user.uid);
-                
-                // 檢查是否已簽到
                 const doc = await checkinRef.get();
 
                 if (doc.exists) {
                     showAlert("您已經簽到過了，請勿重複簽到。", 'warning');
-                    // 恢復按鈕狀態
                     submitCheckin.innerHTML = originalText;
                     submitCheckin.disabled = false;
                     return;
                 }
 
-                // 寫入簽到資料
                 await checkinRef.set({
                     uid: user.uid,
                     name: user.displayName || user.email.split('@')[0],
@@ -1472,7 +1215,6 @@
 
                 showAlert("恭喜！簽到成功！", 'success');
                 
-                // 更新按鈕狀態為已簽到
                 submitCheckin.disabled = true;
                 submitCheckin.classList.remove('btn-success');
                 submitCheckin.classList.add('btn-secondary');
@@ -1484,28 +1226,22 @@
                 console.error("簽到失敗:", error);
                 
                 let errorMessage = "簽到失敗，請稍後再試";
-                if (error.code === 'unavailable') {
+                if (error.code === 'permission-denied') {
+                    errorMessage = "權限不足，請檢查 Firestore 規則設定";
+                } else if (error.code === 'unavailable') {
                     errorMessage = "網路連線不穩定，請檢查網路後重試";
-                } else if (error.code === 'permission-denied') {
-                    errorMessage = "權限不足，請確認 Firestore 規則設定正確";
                 }
                 
                 showAlert(errorMessage, 'error');
                 
-                // 恢復按鈕狀態
                 submitCheckin.innerHTML = originalText;
                 submitCheckin.disabled = false;
             }
         }
 
-        // =================================================================
-        // 📊 數據統計與管理後台邏輯 - 修正離線問題
-        // =================================================================
-
         function updateClubCounts() {
             if (!db) return;
             
-            // 使用 get() 而不是 onSnapshot 避免離線錯誤
             db.collection('checkins').get()
                 .then(snapshot => {
                     let rockCountVal = 0;
@@ -1519,7 +1255,6 @@
                         if (data.club === 'jazz') jazzCountVal++;
                     });
 
-                    // 更新首頁計數
                     const rockCount = document.getElementById('rockCount');
                     const guitarCount = document.getElementById('guitarCount');
                     const jazzCount = document.getElementById('jazzCount');
@@ -1534,8 +1269,8 @@
         }
 
         function loadCheckinData() {
-            // 檢查管理員權限
-            if (!auth.currentUser || !ADMIN_EMAILS.includes(auth.currentUser.email)) {
+            const user = auth.currentUser;
+            if (!user || !ADMIN_EMAILS.includes(user.email)) {
                 showAlert("您沒有權限存取管理後台。", 'error');
                 showSection('home');
                 return;
@@ -1546,10 +1281,8 @@
                 return;
             }
 
-            // 使用 get() 而不是 onSnapshot 避免離線錯誤
             db.collection('checkins').orderBy('timestamp', 'desc').get()
                 .then(snapshot => {
-                    // 1. 更新詳細記錄表
                     const checkinRecords = document.getElementById('checkinRecords');
                     let recordsHtml = '';
                     let stats = {
@@ -1561,7 +1294,6 @@
                     snapshot.forEach(doc => {
                         const data = doc.data();
 
-                        // 統計數據
                         if (stats[data.club]) {
                             stats[data.club].total++;
                             if (data.role === 'performer') {
@@ -1591,28 +1323,7 @@
                         checkinRecords.innerHTML = recordsHtml;
                     }
 
-                    // 2. 更新管理後台統計卡片
-                    const adminRockTotal = document.getElementById('adminRockTotal');
-                    const adminRockPerformers = document.getElementById('adminRockPerformers');
-                    const adminRockAudience = document.getElementById('adminRockAudience');
-                    const adminGuitarTotal = document.getElementById('adminGuitarTotal');
-                    const adminGuitarPerformers = document.getElementById('adminGuitarPerformers');
-                    const adminGuitarAudience = document.getElementById('adminGuitarAudience');
-                    const adminJazzTotal = document.getElementById('adminJazzTotal');
-                    const adminJazzPerformers = document.getElementById('adminJazzPerformers');
-                    const adminJazzAudience = document.getElementById('adminJazzAudience');
-
-                    if (adminRockTotal) adminRockTotal.textContent = stats.rock.total;
-                    if (adminRockPerformers) adminRockPerformers.textContent = stats.rock.performer;
-                    if (adminRockAudience) adminRockAudience.textContent = stats.rock.audience;
-
-                    if (adminGuitarTotal) adminGuitarTotal.textContent = stats.guitar.total;
-                    if (adminGuitarPerformers) adminGuitarPerformers.textContent = stats.guitar.performer;
-                    if (adminGuitarAudience) adminGuitarAudience.textContent = stats.guitar.audience;
-
-                    if (adminJazzTotal) adminJazzTotal.textContent = stats.jazz.total;
-                    if (adminJazzPerformers) adminJazzPerformers.textContent = stats.jazz.performer;
-                    if (adminJazzAudience) adminJazzAudience.textContent = stats.jazz.audience;
+                    updateAdminStats(stats);
                     
                 })
                 .catch((error) => {
@@ -1621,12 +1332,28 @@
                 });
         }
 
-        // =================================================================
-        // 🚀 初始化應用程式
-        // =================================================================
+        function updateAdminStats(stats) {
+            const elements = {
+                adminRockTotal: stats.rock.total,
+                adminRockPerformers: stats.rock.performer,
+                adminRockAudience: stats.rock.audience,
+                adminGuitarTotal: stats.guitar.total,
+                adminGuitarPerformers: stats.guitar.performer,
+                adminGuitarAudience: stats.guitar.audience,
+                adminJazzTotal: stats.jazz.total,
+                adminJazzPerformers: stats.jazz.performer,
+                adminJazzAudience: stats.jazz.audience
+            };
+
+            for (const [id, value] of Object.entries(elements)) {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = value;
+                }
+            }
+        }
 
         function bindEventListeners() {
-            // 安全地綁定事件
             const googleSignIn = document.getElementById('googleSignIn');
             const logoutBtn = document.getElementById('logoutBtn');
             const checkinForm = document.getElementById('checkinForm');
@@ -1644,30 +1371,76 @@
             }
         }
 
+        function initGallery() {
+            const galleryContainer = document.getElementById('galleryContainer');
+            if (!galleryContainer) return;
+            
+            galleryContainer.innerHTML = `
+                <button class="gallery-nav gallery-prev" onclick="prevSlide()">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="gallery-nav gallery-next" onclick="nextSlide()">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <div class="gallery-controls" id="galleryControls"></div>
+            `;
+            
+            const slidesHtml = galleryMedia.map((media, index) => {
+                const activeClass = index === 0 ? 'active' : '';
+                return `<div class="gallery-slide ${activeClass}"><img src="${media.src}" alt="${media.alt}" loading="lazy"></div>`;
+            }).join('');
+            
+            galleryContainer.insertAdjacentHTML('beforeend', slidesHtml);
+
+            const dotsHtml = galleryMedia.map((_, index) => {
+                const activeClass = index === 0 ? 'active' : '';
+                return `<div class="gallery-dot ${activeClass}" onclick="showSlide(${index})"></div>`;
+            }).join('');
+            
+            document.getElementById('galleryControls').innerHTML = dotsHtml;
+        }
+
+        function showSlide(index) {
+            const gallerySlides = document.querySelectorAll('.gallery-slide');
+            const galleryDots = document.querySelectorAll('.gallery-dot');
+            
+            if (!gallerySlides.length) return;
+
+            currentSlide = (index + galleryMedia.length) % galleryMedia.length;
+
+            gallerySlides.forEach((slide, idx) => {
+                slide.classList.toggle('active', idx === currentSlide);
+            });
+
+            galleryDots.forEach((dot, idx) => {
+                dot.classList.toggle('active', idx === currentSlide);
+            });
+        }
+
+        function nextSlide() { showSlide(currentSlide + 1); }
+        function prevSlide() { showSlide(currentSlide - 1); }
+
+        function startGallery() {
+            if (galleryMedia.length <= 1) return;
+            clearInterval(galleryInterval);
+            galleryInterval = setInterval(nextSlide, 5000);
+        }
+
+        function stopGallery() {
+            clearInterval(galleryInterval);
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             console.log("DOM 載入完成，開始初始化...");
             
-            // 綁定事件監聽器
             bindEventListeners();
-            
-            // 初始化回饋功能
             initializeFeedback();
-            
-            // 初始化藝廊
             initGallery();
-            
-            // 啟動輪播
             startGallery();
-            
-            // 更新社團計數
             updateClubCounts();
             
             console.log("應用程式初始化完成");
         });
-
-        // =================================================================
-        // 🔥 程式碼結束
-        // =================================================================
     </script>
 </body>
 </html>
