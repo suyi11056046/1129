@@ -1325,47 +1325,27 @@
         });
 
         async function checkIfAlreadyCheckedIn(uid) {
-            try {
-                const docRef = db.collection('checkins').doc(uid);
-                const doc = await docRef.get();
+    try {
+        const docRef = db.collection('checkins').doc(uid);
+        const doc = await docRef.get();
 
-                if (doc.exists && DOM.submitCheckin) {
-                    DOM.submitCheckin.disabled = true;
-                    DOM.submitCheckin.classList.remove('btn-success');
-                    DOM.submitCheckin.classList.add('btn-secondary');
-                    DOM.submitCheckin.innerHTML = `<i class="fas fa-check-circle"></i> 已於 ${formatTimestamp(doc.data().timestamp)} 完成簽到`;
-                    
-                    // 預先填寫已簽到的資訊
-                    const clubSelect = document.getElementById('club');
-                    if (clubSelect) clubSelect.value = doc.data().club;
-                    
-                    const roleEl = document.getElementById(doc.data().role);
-                    if (roleEl) roleEl.checked = true;
-
-                    // 禁用所有表單控制項
-                    document.getElementById('club').disabled = true;
-                    document.getElementById('performer').disabled = true;
-                    document.getElementById('audience').disabled = true;
-
-                    if (document.getElementById('checkin').style.display === 'block') {
-                        showAlert("您已經簽到過了！", 'warning');
-                    }
-
-                } else if (DOM.submitCheckin) {
-                    DOM.submitCheckin.disabled = false;
-                    DOM.submitCheckin.classList.add('btn-success');
-                    DOM.submitCheckin.classList.remove('btn-secondary');
-                    DOM.submitCheckin.innerHTML = `<i class="fas fa-check-circle"></i> 完成簽到`;
-                    
-                    // 啟用所有表單控制項
-                    document.getElementById('club').disabled = false;
-                    document.getElementById('performer').disabled = false;
-                    document.getElementById('audience').disabled = false;
-                }
-            } catch (error) {
-                console.error("檢查簽到狀態失敗:", error);
-            }
+        if (doc.exists && DOM.submitCheckin) {
+            DOM.submitCheckin.disabled = true;
+            DOM.submitCheckin.classList.remove('btn-success');
+            DOM.submitCheckin.classList.add('btn-secondary');
+            DOM.submitCheckin.innerHTML = `<i class="fas fa-check-circle"></i> 已簽到`;
+            
+            // 暫時禁用這些行，避免權限錯誤
+            // document.getElementById('club').disabled = true;
+            // document.getElementById('performer').disabled = true;
+            // document.getElementById('audience').disabled = true;
         }
+    } catch (error) {
+        console.error("檢查簽到狀態失敗:", error);
+        // 暫時不顯示錯誤訊息
+        // showAlert("檢查簽到狀態時發生錯誤", 'error');
+    }
+}
 
         // =================================================================
         // 📝 簽到表單邏輯
@@ -1537,100 +1517,9 @@
         // =================================================================
 
         function showFeedbackModal() {
-            try {
-                const feedbackModalElement = document.getElementById('feedbackModal');
-                if (!feedbackModalElement) {
-                    console.error('找不到回饋模態視窗元素');
-                    showAlert('回饋功能暫時無法使用', 'error');
-                    return;
-                }
-                
-                const feedbackModal = new bootstrap.Modal(feedbackModalElement);
-                
-                // 重置表單
-                const feedbackForm = document.getElementById('feedbackForm');
-                if (feedbackForm) {
-                    feedbackForm.reset();
-                }
-                
-                // 自動填入已登入使用者資訊
-                const user = auth.currentUser;
-                if (user) {
-                    const nameInput = document.getElementById('feedbackName');
-                    const emailInput = document.getElementById('feedbackEmail');
-                    if (nameInput) nameInput.value = user.displayName || '';
-                    if (emailInput) emailInput.value = user.email || '';
-                }
-                
-                feedbackModal.show();
-                
-            } catch (error) {
-                console.error('顯示回饋模態視窗失敗:', error);
-                showAlert('無法開啟回饋表單，請重新整理頁面後再試', 'error');
-            }
-        }
-
-        // 初始化回饋功能
-        function initializeFeedback() {
-            const submitFeedbackBtn = document.getElementById('submitFeedback');
-            if (submitFeedbackBtn) {
-                submitFeedbackBtn.addEventListener('click', handleFeedbackSubmit);
-            }
-        }
-
-        async function handleFeedbackSubmit() {
-            const submitBtn = document.getElementById('submitFeedback');
-            const originalText = submitBtn.innerHTML;
-            
-            try {
-                // 驗證表單
-                const name = document.getElementById('feedbackName').value;
-                const email = document.getElementById('feedbackEmail').value;
-                const club = document.getElementById('feedbackClub').value;
-                const rating = document.querySelector('input[name="rating"]:checked')?.value;
-                const message = document.getElementById('feedbackMessage').value;
-                const allowContact = document.getElementById('allowContact').checked;
-
-                if (!name || !email || !club || !rating || !message) {
-                    showAlert('請填寫所有必填欄位', 'error');
-                    return;
-                }
-
-                // 顯示載入狀態
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<span class="loading-spinner me-2"></span> 提交中...';
-
-                // 儲存到 Firestore
-                const feedbackRef = db.collection('feedbacks').doc();
-                await feedbackRef.set({
-                    id: feedbackRef.id,
-                    name: name,
-                    email: email,
-                    club: club,
-                    rating: parseInt(rating),
-                    message: message,
-                    allowContact: allowContact,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                // 顯示成功訊息
-                const feedbackModal = bootstrap.Modal.getInstance(document.getElementById('feedbackModal'));
-                if (feedbackModal) {
-                    feedbackModal.hide();
-                }
-                
-                const successModal = new bootstrap.Modal(document.getElementById('feedbackSuccessModal'));
-                successModal.show();
-
-            } catch (error) {
-                console.error('回饋提交失敗:', error);
-                showAlert('回饋提交失敗，請稍後再試', 'error');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
-            }
-        }
-
+    // 簡單的 alert 替代方案
+    showAlert('🎵 聯合成果發表會回饋 🎵\n\n感謝您參與本次活動！\n目前線上回饋功能正在維護中。\n\n請直接聯繫各社團負責人或活動主辦單位提供寶貴意見。\n\n我們重視您的每一個回饋！', 'info');
+}
         // 在管理後台顯示回饋記錄
         function loadFeedbackData() {
             if (!auth.currentUser || !ADMIN_EMAILS.includes(auth.currentUser.email)) {
