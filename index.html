@@ -895,14 +895,14 @@
     
     <script>
         const FIREBASE_CONFIG = {
-            apiKey: "AIzaSyDftj_ljUaMvydlgSe2B_DhAvzb2XZRh28",
-            authDomain: "project-1354158353070095567.firebaseapp.com",
-            projectId: "project-1354158353070095567",
-            storageBucket: "project-1354158353070095567.firebasestorage.app",
-            messagingSenderId: "814869172242",
-            appId: "1:814869172242:web:2966fc308e9275620108cb",
-            measurementId: "G-63CP9QZBV6"
-        };
+    apiKey: "AIzaSyDftj_ljUaMvydlgSe2B_DhAvzb2XZRh28",
+    authDomain: "project-1354158453070095567.firebaseapp.com",  // 確認是 584
+    projectId: "project-1354158453070095567",  // 確認是 584
+    storageBucket: "project-1354158453070095567.firebasestorage.app",  // 確認是 584
+    messagingSenderId: "814869172242",
+    appId: "1:814869172242:web:2966fc308e9275620108cb",
+    measurementId: "G-63CP9QZBV6"
+};
 
         const ADMIN_EMAILS = ["11056046@ntub.edu.tw"];
         const SCHOOL_DOMAIN = "ntub.edu.tw";
@@ -914,6 +914,12 @@
                 console.log("Firebase 初始化成功");
                 auth = firebase.auth();
                 db = firebase.firestore();
+                
+                // 啟用離線持久化
+                db.enablePersistence()
+                    .catch((err) => {
+                        console.warn("離線持久化啟用失敗:", err);
+                    });
             } else {
                 firebase.app();
                 auth = firebase.auth();
@@ -1078,15 +1084,32 @@
                 login_hint: '@ntub.edu.tw'
             });
 
+            // 顯示載入狀態
+            const googleSignInBtn = document.getElementById('googleSignIn');
+            const originalText = googleSignInBtn.innerHTML;
+            googleSignInBtn.disabled = true;
+            googleSignInBtn.innerHTML = '<span class="loading-spinner me-2"></span> 登入中...';
+
             auth.signInWithPopup(provider)
+                .then(() => {
+                    // 登入成功，狀態會在 onAuthStateChanged 中處理
+                })
                 .catch((error) => {
                     console.error("Google 登入失敗:", error);
+                    
+                    // 恢復按鈕狀態
+                    googleSignInBtn.innerHTML = originalText;
+                    googleSignInBtn.disabled = false;
+                    
                     let errorMessage = "登入失敗，請稍後再試。";
                     if (error.code === 'auth/popup-blocked') {
                         errorMessage = "登入視窗被瀏覽器阻止，請允許彈出視窗。";
                     } else if (error.code === 'auth/popup-closed-by-user') {
                         errorMessage = "登入視窗已被關閉，請重新點擊登入。";
+                    } else if (error.code === 'auth/unauthorized-domain') {
+                        errorMessage = "此網域未授權，請檢查 Firebase 設定。";
                     }
+                    
                     showAlert(errorMessage, 'error');
                 });
         }
@@ -1192,52 +1215,56 @@
             submitCheckinData(user, club, role, originalText, submitCheckin);
         }
 
-        async function submitCheckinData(user, club, role, originalText, submitCheckin) {
-            try {
-                const checkinRef = db.collection('checkins').doc(user.uid);
-                const doc = await checkinRef.get();
+        // 在簽到函式中添加更詳細的錯誤處理
+async function submitCheckinData(user, club, role, originalText, submitCheckin) {
+    try {
+        const checkinRef = db.collection('checkins').doc(user.uid);
+        const doc = await checkinRef.get();
 
-                if (doc.exists) {
-                    showAlert("您已經簽到過了，請勿重複簽到。", 'warning');
-                    submitCheckin.innerHTML = originalText;
-                    submitCheckin.disabled = false;
-                    return;
-                }
-
-                await checkinRef.set({
-                    uid: user.uid,
-                    name: user.displayName || user.email.split('@')[0],
-                    email: user.email,
-                    club: club,
-                    role: role,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                showAlert("恭喜！簽到成功！", 'success');
-                
-                submitCheckin.disabled = true;
-                submitCheckin.classList.remove('btn-success');
-                submitCheckin.classList.add('btn-secondary');
-                submitCheckin.innerHTML = `<i class="fas fa-check-circle"></i> 已簽到`;
-                
-                setTimeout(() => showSection('home'), 1500);
-
-            } catch (error) {
-                console.error("簽到失敗:", error);
-                
-                let errorMessage = "簽到失敗，請稍後再試";
-                if (error.code === 'permission-denied') {
-                    errorMessage = "權限不足，請檢查 Firestore 規則設定";
-                } else if (error.code === 'unavailable') {
-                    errorMessage = "網路連線不穩定，請檢查網路後重試";
-                }
-                
-                showAlert(errorMessage, 'error');
-                
-                submitCheckin.innerHTML = originalText;
-                submitCheckin.disabled = false;
-            }
+        if (doc.exists) {
+            showAlert("您已經簽到過了，請勿重複簽到。", 'warning');
+            submitCheckin.innerHTML = originalText;
+            submitCheckin.disabled = false;
+            return;
         }
+
+        await checkinRef.set({
+            uid: user.uid,
+            name: user.displayName || user.email.split('@')[0],
+            email: user.email,
+            club: club,
+            role: role,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        showAlert("恭喜！簽到成功！", 'success');
+        
+        // 更新統計數字
+        updateClubCounts();
+        
+        submitCheckin.disabled = true;
+        submitCheckin.classList.remove('btn-success');
+        submitCheckin.classList.add('btn-secondary');
+        submitCheckin.innerHTML = `<i class="fas fa-check-circle"></i> 已簽到`;
+        
+        setTimeout(() => showSection('home'), 1500);
+
+    } catch (error) {
+        console.error("簽到失敗:", error);
+        
+        let errorMessage = "簽到失敗，請稍後再試";
+        if (error.code === 'permission-denied') {
+            errorMessage = "權限不足，請檢查 Firestore 規則設定";
+        } else if (error.code === 'unavailable') {
+            errorMessage = "網路連線不穩定，請檢查網路後重試";
+        }
+        
+        showAlert(errorMessage, 'error');
+        
+        submitCheckin.innerHTML = originalText;
+        submitCheckin.disabled = false;
+    }
+}
 
         function updateClubCounts() {
             if (!db) return;
@@ -1430,17 +1457,16 @@
             clearInterval(galleryInterval);
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log("DOM 載入完成，開始初始化...");
-            
-            bindEventListeners();
-            initializeFeedback();
-            initGallery();
-            startGallery();
-            updateClubCounts();
-            
-            console.log("應用程式初始化完成");
-        });
+       // 將這部分移到 script 標籤的最底部
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM 載入完成，開始初始化...");
+    bindEventListeners();
+    initializeFeedback();
+    initGallery();
+    startGallery();
+    updateClubCounts();
+    console.log("應用程式初始化完成");
+});
     </script>
 </body>
 </html>
